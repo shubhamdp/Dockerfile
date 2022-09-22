@@ -8,7 +8,7 @@ RUN set -x \
     && git init \
     && git remote add origin https://github.com/project-chip/connectedhomeip.git \
     && git fetch origin --depth 1 26bfa093f1e6f62dcb907a62ec91103675caa00c \
-    && git checkout FETCH_HEAD
+    && git checkout FETCH_HEAD \
     && : # last line
 
 RUN set -x \
