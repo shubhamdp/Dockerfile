@@ -1,0 +1,30 @@
+ARG VERSION=latest
+FROM connectedhomeip/chip-build-esp32:${VERSION} as build
+
+WORKDIR /opt/espressif
+ENV ESP_MATTER_PATH=/opt/espressif/esp-matter
+
+RUN set -x \
+  && git clone --single-branch -b main --depth 1 https://github.com/espressif/esp-matter.git $ESP_MATTER_PATH \
+  && cd $ESP_MATTER_PATH \
+  && git submodule update --init --depth 1 \
+  && ./connectedhomeip/connectedhomeip/scripts/checkout_submodules.py --platform esp32 --shallow \
+  && ./install.sh \
+  && cd connectedhomeip/connectedhomeip \
+  && gn gen out/host \
+  && ninja -C out/host \
+  && export PATH=$PATH:$PWD/out/host \
+  && cd - \
+  && python3 -m pip install -r tools/mfg_tool/requirements.txt \
+  && : # last line
+
+WORKDIR /opt/espressif
+ENV ESP_RMAKER_PATH=/opt/espressif/esp-rainmaker
+
+RUN set -x \
+  && git clone --recursive --single-branch -b master --depth 1 --shallow-submodules https://github.com/espressif/esp-rainmaker.git $ESP_RMAKER_PATH \
+  && cd $ESP_RMAKER_PATH \
+  && python3 -m pip install -r cli/requirements.txt \
+  && : # last line
+
+WORKDIR /opt/espressif
