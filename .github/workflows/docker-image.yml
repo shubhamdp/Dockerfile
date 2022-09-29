@@ -7,17 +7,17 @@ on:
 jobs:
 
   build:
+    strategy:
+      matrix:
+        docker-files: ["chip", "matter-one"]
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
     - name: Build chip image
-      run: docker build . --file esp-matter-builds --tag ${{secrets.DOCKER_USER}}/esp-matter:chip
+      run: docker build . --file ${{matrix.docker-files}} --tag ${{secrets.DOCKER_USER}}/esp-matter:${{matrix.docker-files}}
     
-    - name: Build matter one image
-      run: docker build . --file matter-one-build --tag ${{secrets.DOCKER_USER}}/esp-matter:matter-one
-
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -26,5 +26,4 @@ jobs:
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: docker push
       run: |
-        docker push ${{secrets.DOCKER_USER}}/esp-matter:chip
-        docker push ${{secrets.DOCKER_USER}}/esp-matter:matter-one      
+        docker push ${{secrets.DOCKER_USER}}/esp-matter:${{matrix.docker-files}}
