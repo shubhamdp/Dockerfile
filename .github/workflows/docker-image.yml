@@ -12,9 +12,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file esp-matter-builds --tag ${{secrets.DOCKER_USER}}/esp-matter:latest
+    - name: Build chip image
+      run: docker build . --file esp-matter-builds --tag ${{secrets.DOCKER_USER}}/esp-matter:chip
     
+    - name: Build matter one image
+      run: docker build . --file matter-one-build --tag ${{secrets.DOCKER_USER}}/esp-matter:matter-one
+
     - name: docker login
       env:
         DOCKER_USER: ${{secrets.DOCKER_USER}}
@@ -22,4 +25,6 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: docker push
-      run: docker push ${{secrets.DOCKER_USER}}/esp-matter:latest
+      run: |
+        docker push ${{secrets.DOCKER_USER}}/esp-matter:chip
+        docker push ${{secrets.DOCKER_USER}}/esp-matter:matter-one      
