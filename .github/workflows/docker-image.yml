@@ -18,7 +18,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build chip image
-      run: docker build . --file ${{matrix.docker-files}} --tag ${{secrets.DOCKER_USER}}/esp-matter:${{matrix.docker-files}}
+      run: |
+        docker system prune -a
+        docker build . --file ${{matrix.docker-files}} --tag ${{secrets.DOCKER_USER}}/esp-matter:${{matrix.docker-files}}
     
     - name: docker login
       env:
